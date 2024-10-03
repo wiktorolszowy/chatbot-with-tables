@@ -1,0 +1,42 @@
+[project]
+name = "chatbot-with-tables"
+version = "0.1.0"
+description = "Chatbot that answers questions about tabular data. Alternative to pandasai."
+readme = "README.md"
+requires-python = "==3.10.12"
+dependencies = [
+    "langchain==0.2.16",
+    "langchain_experimental",
+    "langchain_ollama",
+    "langchain-openai",
+    "langchain-core==0.2.40",
+    "scikit-learn",
+    "jupyter",
+    "pandas",
+    "tabulate",
+    "jupytext",
+    "pre-commit",
+    "ipykernel",
+    "python-dotenv",
+    "flake8",
+    "ruff",
+]
+
+[tool.uv.workspace]
+members = ["example"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint]
+disable = [
+"invalid-name",
+"C0301", # Line too long
+"R0915", # Too many statements
+"R0912", # Too many branches
+"R0914", # Too many local variables
+]
+output-format = "colorized"
