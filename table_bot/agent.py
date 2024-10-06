@@ -61,12 +61,15 @@ class CustomPdDataFrameAgentWithContext:
         self.data = None
 
     @lru_cache(maxsize=1)
-    def get_cached_agent(self):
+    def get_cached_agent(self, data_id: int):
         """
         Returns a cached instance of the pandas dataframe agent.
 
-        This method uses the lru_cache decorator with maxsize=1 to cache a single instance of the agent.
-        The create_pandas_dataframe_agent function is called only once, and the result is cached for future use.
+        This method uses the lru_cache decorator with maxsize=1 to cache a single instance of the agent, separately for each df.
+        The create_pandas_dataframe_agent function is called only once per df, and the result is cached for future use.
+
+        Args:
+            data_id: The unique identifier for the DataFrame.
 
         Returns:
             The cached agent instance.
@@ -97,8 +100,8 @@ class CustomPdDataFrameAgentWithContext:
         if self.data is None:
             raise ValueError("DataFrame must be provided using the context manager.")
 
-        # Get the cached agent instance
-        agent = self.get_cached_agent()
+        # Get the cached agent instance with the DataFrame's memory address as part of the cache key
+        agent = self.get_cached_agent(id(self.data))
 
         # Process the message with the agent
         result = agent.invoke(message, self.data, **self.kwargs)

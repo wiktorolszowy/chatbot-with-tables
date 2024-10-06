@@ -63,11 +63,14 @@ agent = CustomPdDataFrameAgentWithContext(
 
 # ### Use the context manager to inject the DataFrame and invoke the agent
 
-with agent.inject_dataframe(data=df_diabetes):
+with agent.inject_dataframe(data=df_iris):
     # response = agent.invoke("Is there a link between age and the Body Mass Index?")
+    # response = agent.invoke("Can you please repeat your statement?")
     # response = agent.invoke("Yes.")
     # response = agent.invoke("What was your last response?")
-    # response = agent.invoke("What is the strongest link in this data? Be specific - for which pair of variables (not the variable with itself).")
+    # response = agent.invoke(
+    #     "What is the strongest link in this data? Be specific - for which pair of variables (not the variable with itself)."
+    # )
     response = agent.invoke(
         "What is the weakest link in this data? Be specific - for which pair of variables (not the variable with itself)."
     )
