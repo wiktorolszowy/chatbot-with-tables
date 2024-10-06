@@ -1,6 +1,7 @@
 # Contact: Wiktor Olszowy, olszowyw@gmail.com
 
 from contextlib import contextmanager
+from functools import lru_cache
 from typing import Any, Generator, Optional
 
 import pandas as pd
@@ -59,6 +60,27 @@ class CustomPdDataFrameAgentWithContext:
         yield
         self.data = None
 
+    @lru_cache(maxsize=1)
+    def get_cached_agent(self):
+        """
+        Returns a cached instance of the pandas dataframe agent.
+
+        This method uses the lru_cache decorator with maxsize=1 to cache a single instance of the agent.
+        The create_pandas_dataframe_agent function is called only once, and the result is cached for future use.
+
+        Returns:
+            The cached agent instance.
+        """
+
+        return create_pandas_dataframe_agent(
+            llm=self.llm,
+            df=self.data,
+            verbose=self.verbose,
+            allow_dangerous_code=self.allow_dangerous_code,
+            agent_type=self.agent_type,
+            **self.kwargs,
+        )
+
     def invoke(self, message: str) -> Any:
         """
         Invokes the agent with the provided message.
@@ -75,12 +97,10 @@ class CustomPdDataFrameAgentWithContext:
         if self.data is None:
             raise ValueError("DataFrame must be provided using the context manager.")
 
-        agent = create_pandas_dataframe_agent(
-            self.llm,
-            self.data,
-            verbose=self.verbose,
-            allow_dangerous_code=self.allow_dangerous_code,
-            agent_type=self.agent_type,
-            **self.kwargs,
-        )
-        return agent.invoke(message)
+        # Get the cached agent instance
+        agent = self.get_cached_agent()
+
+        # Process the message with the agent
+        result = agent.invoke(message, self.data, **self.kwargs)
+
+        return result

@@ -29,7 +29,7 @@ sudo apt install -y pipx
 pipx install uv
 ```
 
-Create a ```venv```. Install dependencies. Install pre-commit.
+Create a ```venv```. Install dependencies. Install pre-commit. Run once.
 ```
 uv venv
 source .venv/bin/activate

@@ -21,12 +21,12 @@ import pandas as pd
 from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
+from sklearn.datasets import load_diabetes, load_iris
 
 from table_bot import CustomPdDataFrameAgentWithContext
 
-from sklearn.datasets import load_diabetes
-
-df = load_diabetes(as_frame=True)['data']
+df_diabetes = load_diabetes(as_frame=True)["data"]
+df_iris = load_iris(as_frame=True)["data"]
 # -
 
 # ### Specify the language model
@@ -63,6 +63,12 @@ agent = CustomPdDataFrameAgentWithContext(
 
 # ### Use the context manager to inject the DataFrame and invoke the agent
 
-with agent.inject_dataframe(data=df):
-    response = agent.invoke("Is there a link between age and the Body Mass Index?")
+with agent.inject_dataframe(data=df_diabetes):
+    # response = agent.invoke("Is there a link between age and the Body Mass Index?")
+    # response = agent.invoke("Yes.")
+    # response = agent.invoke("What was your last response?")
+    # response = agent.invoke("What is the strongest link in this data? Be specific - for which pair of variables (not the variable with itself).")
+    response = agent.invoke(
+        "What is the weakest link in this data? Be specific - for which pair of variables (not the variable with itself)."
+    )
     print(response)

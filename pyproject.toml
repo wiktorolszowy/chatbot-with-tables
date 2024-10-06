@@ -33,10 +33,5 @@ profile = "black"
 
 [tool.pylint]
 disable = [
-"invalid-name",
-"C0301", # Line too long
-"R0915", # Too many statements
-"R0912", # Too many branches
-"R0914", # Too many local variables
 ]
 output-format = "colorized"
