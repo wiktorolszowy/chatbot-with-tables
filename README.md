@@ -29,13 +29,15 @@ sudo apt install -y pipx
 pipx install uv
 ```
 
-Create a ```venv```. Install dependencies. Install pre-commit. Run once.
+Create a ```venv```. Install dependencies. Install pre-commit. Update uv lock. Run once.
 ```
 uv venv
 source .venv/bin/activate
 uv pip install -r pyproject.toml
 
 pre-commit install
+
+uv lock
 ```
 
 Activate the environment and run python.
@@ -44,7 +46,21 @@ source .venv/bin/activate
 uv run python
 ```
 
-Remember that many commands need to be started with ```uv```, e.g., ```uv pip list```.
+For the flask app we need an available port. Identify the PIDs of processes that use this port and kill them before
+running the app. Be careful that you do not kill something that you need!
+Run the lsof command and note the PIDs of the processes using the port. Kill each process: use the kill command to
+terminate each process by its PID. We use port 5000.
+```
+lsof -i :5000
+kill -9 {PID}
+```
+
+Run the flask app:
+```
+uv run python app.py
+```
+
+Remember that in ```uv```-managed environments, many commands need to be started with ```uv```, e.g., ```uv pip list```.
 
 It is tricky to track changes in notebook files, e.g., with `git diff`.
 Furthermore, we do not want to have cell outputs on the remote (because there could be confidential data there).
