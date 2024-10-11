@@ -49,7 +49,7 @@ uv run python
 For the flask app we need an available port. Identify the PIDs of processes that use this port and kill them before
 running the app. Be careful that you do not kill something that you need!
 Run the lsof command and note the PIDs of the processes using the port. Kill each process: use the kill command to
-terminate each process by its PID. We use port 5000.
+terminate each process by its PID. The flask app uses port 5000.
 ```
 lsof -i :5000
 kill -9 {PID}
