@@ -67,6 +67,15 @@ Furthermore, we do not want to have cell outputs on the remote (because there co
 `.ipynb` files are ignored by git (cf. our ```.gitignore```), so we are tracking the corresponding `.py` file of the `.ipynb` file.
 To get the `.ipynb` file from the `.py` file, run ```jupytext --to ipynb test_table_bot.py```.
 
+To use Docker containerization, first build the Docker image:
+```
+docker build -t chatbot-with-tables .
+```
+and then run the Docker container:
+```
+docker run -p 5000:5000 chatbot-with-tables
+```
+
 ### Suggested VSCode Extensions
 
 Ideally, install the following VSCode extensions:
@@ -101,4 +110,3 @@ Surprisingly, ```langchain_experimental``` does not seem to be considered a vuln
 - Perform prompt engineering, e.g., with [dspy](https://github.com/stanfordnlp/dspy).
 - If fine-tuning needed, start using [MLflow](https://github.com/mlflow/mlflow), in order to track experiments.
 - Use GitHub Actions together with a CI/CD pipeline covering at least some basic tests.
-- Set up a docker container, so that it is easier to move the project to a different environment, making sure that we can reproduce everything.
