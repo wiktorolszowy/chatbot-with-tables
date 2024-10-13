@@ -84,7 +84,7 @@ class CustomPdDataFrameAgentWithContext:
             **self.kwargs,
         )
 
-    def invoke(self, message: str) -> Any:
+    def invoke(self, message: str) -> str:
         """
         Invokes the agent with the provided message.
 
@@ -106,4 +106,4 @@ class CustomPdDataFrameAgentWithContext:
         # Process the message with the agent
         result = agent.invoke(message, self.data, **self.kwargs)
 
-        return result
+        return result["output"]

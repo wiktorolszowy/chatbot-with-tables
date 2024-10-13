@@ -21,6 +21,7 @@ dependencies = [
     "flake8",
     "ruff",
     "flask",
+    "flask_session",
 ]
 
 [tool.uv.workspace]

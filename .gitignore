@@ -189,3 +189,6 @@ config.env
 **/*.csv
 
 .vscode/
+
+# Ignore Flask-Session files
+flask_session/

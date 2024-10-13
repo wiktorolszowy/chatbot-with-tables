@@ -4,6 +4,8 @@ Chatbot that answers questions about tabular data. Alternative to pandasai.
 
 Contact: [olszowyw@gmail.com](mailto:olszowyw@gmail.com)
 
+![Chatbot Screenshot](chatbot_screenshot.png)
+
 ## Development Environment
 
 - Windows 11 Pro
@@ -45,6 +47,10 @@ Activate the environment and run python.
 source .venv/bin/activate
 uv run python
 ```
+
+You need to create file `config.env` (at the root) and put the key there: `OPENAI_API_KEY=...`
+Wiktor uses his own key and `.gitignore` covers `config.env`. You need to create file `config.env` by yourself.
+And you need to use your own OpenAI API key.
 
 For the flask app we need an available port. Identify the PIDs of processes that use this port and kill them before
 running the app. Be careful that you do not kill something that you need!

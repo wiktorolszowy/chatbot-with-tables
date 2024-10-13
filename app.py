@@ -4,11 +4,12 @@ import os
 
 import pandas as pd
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from sklearn.datasets import load_diabetes, load_iris
 
+from flask_session import Session
 from table_bot import CustomPdDataFrameAgentWithContext
 
 # %% Read in the tabular data
@@ -51,20 +52,54 @@ agent = CustomPdDataFrameAgentWithContext(
 # %% Make the flask app
 
 app = Flask(__name__)
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_FILE_DIR"] = "./flask_session"
+Session(app)
 
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def index() -> str:
+    """
+    Renders the index page and initializes conversation history if not present.
+
+    This function checks if the 'history' key is present in the session. If not,
+    it initializes it as an empty list. It then renders the "index.html" template,
+    passing the conversation history to the template.
+
+    Returns:
+        A rendered HTML template for the index page with the conversation history.
+    """
+    # Initialize conversation history if not present
+    if "history" not in session:
+        session["history"] = []
+    return render_template("index.html", history=session["history"])
 
 
 @app.route("/chat", methods=["POST"])
-def chat():
+def chat() -> jsonify:
+    """
+    Handles incoming chat messages, processes them using an agent, and updates the conversation history.
+
+    This function:
+    1. Retrieves JSON data from the request.
+    2. Extracts the message from the JSON data.
+    3. Injects a DataFrame into the agent's context.
+    4. Invokes the agent with the extracted message to get a response.
+    5. Updates the session's conversation history with the question and response.
+    6. Marks the session as modified.
+    7. Returns the response as a JSON object.
+
+    Returns:
+        Response: A JSON object containing the agent's response.
+    """
     data = request.get_json()
     message = data.get("message")
     with agent.inject_dataframe(data=df_iris):
         response = agent.invoke(message)
-    return jsonify({"response": response["output"]})
+    # Update conversation history
+    session["history"].append({"question": message, "response": response})
+    session.modified = True
+    return jsonify({"response": response})
 
 
 if __name__ == "__main__":
