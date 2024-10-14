@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot with the Iris table</title>
+    <title>Chatbot with tables</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -63,6 +63,12 @@
         .input-container button:hover {
             background-color: #0056b3;
         }
+        .upload-container {
+            margin-bottom: 10px;
+        }
+        .file-list {
+            margin-top: 10px;
+        }
     </style>
     <script>
         async function sendMessage() {
@@ -85,7 +91,21 @@
 </head>
 <body>
     <div class="chat-container">
-        <h1>Chatbot with the Iris table</h1>
+        <h1>Chatbot with tables</h1>
+        <div class="upload-container">
+            <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="files" id="files" multiple>
+                <button type="submit">Upload</button>
+            </form>
+            <div class="file-list">
+                <h3>Uploaded Files:</h3>
+                <ul>
+                    {% for filename in filenames %}
+                        <li>{{ filename }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
         <div id="chat-box" class="chat-box">
             {% for entry in history %}
                 <p><strong>You:</strong> {{ entry.question }}</p>

@@ -2,18 +2,13 @@ import os
 
 import pandas as pd
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
-from sklearn.datasets import load_diabetes, load_iris
+from werkzeug.utils import secure_filename
 
 from flask_session import Session
 from table_bot import CustomPdDataFrameAgentWithContext
-
-# %% Read in the tabular data
-
-df_diabetes = load_diabetes(as_frame=True)["data"]
-df_iris = load_iris(as_frame=True)["data"]
 
 # %% Specify the language model
 #
@@ -47,12 +42,16 @@ agent = CustomPdDataFrameAgentWithContext(
     suffix="Think that some column names could contain synonyms of the words in the question.",
 )
 
-# %% Make the flask app
+# Initialize the Flask app
 
 app = Flask(__name__)
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_FILE_DIR"] = "./flask_session"
+app.config["UPLOAD_FOLDER"] = "./uploads"
 Session(app)
+
+# Ensure the upload folder exists
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
 @app.route("/")
@@ -70,7 +69,33 @@ def index() -> str:
     # Initialize conversation history if not present
     if "history" not in session:
         session["history"] = []
-    return render_template("index.html", history=session["history"])
+    if "filenames" not in session:
+        session["filenames"] = []
+    return render_template("index.html", history=session["history"], filenames=session["filenames"])
+
+
+@app.route("/upload", methods=["POST"])
+def upload() -> str:
+    if "dataframes" not in session:
+        session["dataframes"] = []
+    if "filenames" not in session:
+        session["filenames"] = []
+
+    files = request.files.getlist("files")
+    for file in files:
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(filepath)
+        if filename.endswith(".csv"):
+            df = pd.read_csv(filepath)
+        elif filename.endswith(".xls") or filename.endswith(".xlsx"):
+            df = pd.read_excel(filepath)
+        else:
+            continue
+        session["dataframes"].append(df.to_dict())
+        session["filenames"].append(filename)
+    session.modified = True
+    return redirect("/")
 
 
 @app.route("/chat", methods=["POST"])
@@ -96,7 +121,12 @@ def chat() -> jsonify:
     history_str = " ".join(
         [f"Question: {entry['question']} Response: {entry['response']}" for entry in session["history"]]
     )
-    with agent.inject_dataframe(data=df_iris):
+    # Use the first DataFrame in the session for now
+    if "dataframes" in session and session["dataframes"]:
+        df = pd.DataFrame(session["dataframes"][0])
+    else:
+        df = None
+    with agent.inject_dataframe(data=df):
         response = agent.invoke(message + ". Consider this chat history: " + history_str)
     # Update conversation history
     session["history"].append({"question": message, "response": response})
