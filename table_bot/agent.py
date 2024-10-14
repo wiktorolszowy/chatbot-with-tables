@@ -1,5 +1,3 @@
-# Contact: Wiktor Olszowy, olszowyw@gmail.com
-
 from contextlib import contextmanager
 from functools import lru_cache
 from typing import Any, Generator, Optional

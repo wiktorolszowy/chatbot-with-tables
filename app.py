@@ -1,5 +1,3 @@
-# Contact: Wiktor Olszowy, olszowyw@gmail.com
-
 import os
 
 import pandas as pd
@@ -46,7 +44,7 @@ agent = CustomPdDataFrameAgentWithContext(
     agent_type="tool-calling",
     # Basic prompt engineering
     # The language models (both llama3.1 and gpt-4o) sometimes can not identify synonyms (they won't identify the relevant columns in the df).
-    suffix="Answer the question without asking me any additional questions. Think that some columns could contain synonyms of the words in the question.",
+    suffix="Think that some column names could contain synonyms of the words in the question.",
 )
 
 # %% Make the flask app
@@ -94,13 +92,19 @@ def chat() -> jsonify:
     """
     data = request.get_json()
     message = data.get("message")
+    # Make a string representation of the conversation history, to be added to the question/message
+    history_str = " ".join(
+        [f"Question: {entry['question']} Response: {entry['response']}" for entry in session["history"]]
+    )
     with agent.inject_dataframe(data=df_iris):
-        response = agent.invoke(message)
+        response = agent.invoke(message + ". Consider this chat history: " + history_str)
     # Update conversation history
     session["history"].append({"question": message, "response": response})
     session.modified = True
     return jsonify({"response": response})
 
+
+# %% Run the Flask app
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
