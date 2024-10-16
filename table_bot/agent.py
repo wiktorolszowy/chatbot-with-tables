@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import Any, Generator, Optional
+from typing import Any, Generator, List, Union
 
 import pandas as pd
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
@@ -23,7 +23,7 @@ class CustomPdDataFrameAgentWithContext:
         llm: Any,
         verbose: bool = False,
         allow_dangerous_code: bool = False,
-        agent_type: str = "default",
+        agent_type: str = "tool-calling",
         **kwargs: Any,
     ) -> None:
         """
@@ -41,19 +41,20 @@ class CustomPdDataFrameAgentWithContext:
         self.allow_dangerous_code = allow_dangerous_code
         self.agent_type = agent_type
         self.kwargs = kwargs
-        self.data: Optional[pd.DataFrame] = None
+        self.data = None
 
     @contextmanager
-    def inject_dataframe(self, data: pd.DataFrame) -> Generator[None, None, None]:
+    def inject_dataframe(self, data: Union[pd.DataFrame, List[pd.DataFrame]]) -> Generator[None, None, None]:
         """
-        Context manager to inject a pandas DataFrame into the agent.
+        Context manager to inject a pandas DataFrame or a list of DataFrames into the agent.
 
         Args:
-            data: The pandas DataFrame to be injected.
+            data: The pandas DataFrame or list of DataFrames to be injected.
 
         Yields:
             None
         """
+
         self.data = data
         yield
         self.data = None
@@ -95,6 +96,7 @@ class CustomPdDataFrameAgentWithContext:
         Raises:
             ValueError: If the DataFrame is not provided using the context manager.
         """
+
         if self.data is None:
             raise ValueError("DataFrame must be provided using the context manager.")
 
@@ -102,6 +104,8 @@ class CustomPdDataFrameAgentWithContext:
         agent = self.get_cached_agent(id(self.data))
 
         # Process the message with the agent
-        result = agent.invoke(message, self.data, **self.kwargs)
+        # Before included in agent.invoke also self.data, which was not necessary, and actually led to errors when injecting lists of dfs.
+        # Somehow, it worked for a single df...
+        result = agent.invoke(message, **self.kwargs)
 
         return result["output"]

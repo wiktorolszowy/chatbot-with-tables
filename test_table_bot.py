@@ -17,13 +17,15 @@
 # +
 import os
 
-import pandas as pd
 from dotenv import load_dotenv
-from langchain_ollama import ChatOllama
+
+# from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from sklearn.datasets import load_diabetes, load_iris
 
 from table_bot import CustomPdDataFrameAgentWithContext
+
+# from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 
 df_diabetes = load_diabetes(as_frame=True)["data"]
 df_iris = load_iris(as_frame=True)["data"]
@@ -55,23 +57,22 @@ agent = CustomPdDataFrameAgentWithContext(
     verbose=False,
     # This is a risky operation and, actually, should be done in a sandboxed env
     allow_dangerous_code=True,
-    agent_type="tool-calling",
     # Basic prompt engineering
     # The language models (both llama3.1 and gpt-4o) sometimes can not identify synonyms (they won't identify the relevant columns in the df).
-    suffix="Answer the question without asking me any additional questions. Think that some columns could contain synonyms of the words in the question.",
+    suffix="Answer the question without asking me any additional questions. Think that some column names could contain synonyms of the words in the question.",
 )
 
 # ### Use the context manager to inject the DataFrame and invoke the agent
 
-with agent.inject_dataframe(data=df_iris):
+with agent.inject_dataframe(data=[df_iris, df_diabetes]):
     # response = agent.invoke("Is there a link between age and the Body Mass Index?")
     # response = agent.invoke("Can you please repeat your statement?")
-    # response = agent.invoke("Yes.")
     # response = agent.invoke("What was your last response?")
-    # response = agent.invoke(
-    #     "What is the strongest link in this data? Be specific - for which pair of variables (not the variable with itself)."
-    # )
-    response = agent.invoke(
-        "What is the weakest link in this data? Be specific - for which pair of variables (not the variable with itself)."
-    )
+    # response = agent.invoke("What is the weakest link in this data?")
+    response = agent.invoke("what are the sizes of these dataframes?")
     print(response)
+
+# # Checking the agent directly: without the context manager and without the cache
+# agent = create_pandas_dataframe_agent(llm, [df_iris, df_diabetes], allow_dangerous_code=True, agent_type="tool-calling")
+# response = agent.invoke("what are the sizes of these dataframes?")
+# print(response)

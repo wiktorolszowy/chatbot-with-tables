@@ -3,7 +3,8 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, render_template, request, session
-from langchain_ollama import ChatOllama
+
+# from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from werkzeug.utils import secure_filename
 
@@ -36,7 +37,6 @@ agent = CustomPdDataFrameAgentWithContext(
     verbose=False,
     # This is a risky operation and, actually, should be done in a sandboxed env
     allow_dangerous_code=True,
-    agent_type="tool-calling",
     # Basic prompt engineering
     # The language models (both llama3.1 and gpt-4o) sometimes can not identify synonyms (they won't identify the relevant columns in the df).
     suffix="Think that some column names could contain synonyms of the words in the question.",
@@ -92,7 +92,7 @@ def upload() -> str:
             df = pd.read_excel(filepath)
         else:
             continue
-        session["dataframes"].append(df.to_dict())
+        session["dataframes"].append(df)
         session["filenames"].append(filename)
     session.modified = True
     return redirect("/")
@@ -121,12 +121,11 @@ def chat() -> jsonify:
     history_str = " ".join(
         [f"Question: {entry['question']} Response: {entry['response']}" for entry in session["history"]]
     )
-    # Use the first DataFrame in the session for now
     if "dataframes" in session and session["dataframes"]:
-        df = pd.DataFrame(session["dataframes"][0])
+        dfs = session["dataframes"]
     else:
-        df = None
-    with agent.inject_dataframe(data=df):
+        dfs = None
+    with agent.inject_dataframe(data=dfs):
         response = agent.invoke(message + ". Consider this chat history: " + history_str)
     # Update conversation history
     session["history"].append({"question": message, "response": response})
@@ -137,4 +136,4 @@ def chat() -> jsonify:
 # %% Run the Flask app
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

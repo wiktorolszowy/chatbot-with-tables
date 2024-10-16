@@ -98,6 +98,7 @@ Ideally, install the following VSCode extensions:
 - GitHub Copilot
 - Jupytext for Notebooks (congyiwu)
 - Snyk Security
+- SonarLint
 
 ## Safety
 
@@ -116,3 +117,4 @@ Surprisingly, ```langchain_experimental``` does not seem to be considered a vuln
 - Perform prompt engineering, e.g., with [dspy](https://github.com/stanfordnlp/dspy).
 - If fine-tuning needed, start using [MLflow](https://github.com/mlflow/mlflow), in order to track experiments.
 - Use GitHub Actions together with a CI/CD pipeline covering at least some basic tests.
+- Decrease the response latency. This will not be that easy, because the agent is effectively initialized again each time a dataset is added (but we save the chat history and add it to later questions). Moreover, the chatbot relies on a Python REPL tool, which executes Python code. That takes some time.
