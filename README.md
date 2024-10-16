@@ -10,7 +10,12 @@
 
 Work with Windows+WSL2, Linux directly, or macOS.
 
-If you want to use a local language model, pull/download the llama 3.1 model (otherwise, OpenAI API used). Run once.
+First, clone this repo:
+```
+git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
+```
+
+If you want to use a local language model, pull/download the llama 3.1 model (now anyway OpenAI API is used). Run once.
 ```
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull llama3.1
@@ -25,7 +30,7 @@ sudo apt install -y pipx
 pipx install uv
 ```
 
-Create a ```venv```. Install dependencies. Install pre-commit. Update uv lock. Run once.
+Create a `venv`. Install dependencies. Install pre-commit. Update uv lock. Good to re-run sometimes (to get a clean `venv`).
 ```
 uv venv
 source .venv/bin/activate
@@ -69,7 +74,7 @@ To get the `.ipynb` file from the `.py` file, run ```jupytext --to ipynb test_ta
 
 ## Using the chatbot with a Docker container
 
-If you do not want to work on the code or want to make changes and then transfer the chatbot, consider making a Docker container. First, clone the repo:
+If you do not want to work on the code or want to make changes and then transfer the chatbot, consider making a Docker container. First, clone this repo:
 ```
 git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
 ```
@@ -119,4 +124,4 @@ Surprisingly, ```langchain_experimental``` does not seem to be considered a vuln
 - Perform prompt engineering, e.g., with [dspy](https://github.com/stanfordnlp/dspy).
 - If fine-tuning needed, start using [MLflow](https://github.com/mlflow/mlflow), in order to track experiments.
 - Use GitHub Actions together with a CI/CD pipeline covering at least some basic tests.
-- Decrease the response latency. This will not be that easy, because the agent is effectively initialized again each time a dataset is added (importantly, we are saving the chat history and we are adding it to questions). Moreover, the chatbot relies on a Python REPL tool, which executes Python code. That takes some time.
+- Decrease the response latency. This will not be that easy, because the agent is effectively initialized again each time a dataset is added (importantly, we are saving the chat history and we are adding it to the questions). Moreover, the chatbot relies on a Python REPL tool, which executes Python code. That takes some time.
