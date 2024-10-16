@@ -1,9 +1,3 @@
-Chatbot that answers questions about tabular data. Alternative to pandasai.
-
-**Code written by Wiktor Olszowy, September - October 2024.**
-
-Contact: [olszowyw@gmail.com](mailto:olszowyw@gmail.com)
-
 ![Chatbot Screenshot](chatbot_screenshot.png)
 
 ## Development Environment
@@ -48,7 +42,7 @@ source .venv/bin/activate
 uv run python
 ```
 
-You need to create file `config.env` (at the root) and put the key there: `OPENAI_API_KEY=...`
+You need to create file `config.env` (at the root) and put your OpenAI API key there: `OPENAI_API_KEY=...` Be careful who has access to it!
 Wiktor uses his own key and `.gitignore` covers `config.env`. You need to create file `config.env` by yourself.
 And you need to use your own OpenAI API key.
 
@@ -73,7 +67,14 @@ Furthermore, we do not want to have cell outputs on the remote (because there co
 `.ipynb` files are ignored by git (cf. our ```.gitignore```), so we are tracking the corresponding `.py` file of the `.ipynb` file.
 To get the `.ipynb` file from the `.py` file, run ```jupytext --to ipynb test_table_bot.py```.
 
-To use Docker containerization, first build the Docker image:
+## Using the chatbot with a Docker container
+
+If you do not want to work on the code or want to make changes and then transfer the chatbot, consider making a Docker container. First, clone the repo:
+```
+git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
+```
+Then, you need to create file `config.env` (at the root) and put your OpenAI API key there: `OPENAI_API_KEY=...` Be careful who has access to it!
+Build the Docker image (from the root of the repo):
 ```
 docker build -t chatbot-with-tables .
 ```
@@ -81,6 +82,7 @@ and then run the Docker container:
 ```
 docker run -p 5000:5000 chatbot-with-tables
 ```
+If there are port problems, look above.
 
 ### Suggested VSCode Extensions
 
@@ -117,4 +119,4 @@ Surprisingly, ```langchain_experimental``` does not seem to be considered a vuln
 - Perform prompt engineering, e.g., with [dspy](https://github.com/stanfordnlp/dspy).
 - If fine-tuning needed, start using [MLflow](https://github.com/mlflow/mlflow), in order to track experiments.
 - Use GitHub Actions together with a CI/CD pipeline covering at least some basic tests.
-- Decrease the response latency. This will not be that easy, because the agent is effectively initialized again each time a dataset is added (anyway, we are saving the chat history and we are adding it to later questions). Moreover, the chatbot relies on a Python REPL tool, which executes Python code. That takes some time.
+- Decrease the response latency. This will not be that easy, because the agent is effectively initialized again each time a dataset is added (importantly, we are saving the chat history and we are adding it to questions). Moreover, the chatbot relies on a Python REPL tool, which executes Python code. That takes some time.
