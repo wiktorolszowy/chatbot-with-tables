@@ -20,7 +20,10 @@ RUN /root/.local/bin/uv venv && \
     /root/.local/bin/uv lock
 
 # Copy the rest of the application code into the container
-COPY . .
+COPY table_bot/ /app/table_bot/
+COPY templates/ /app/templates/
+COPY app.py /app/
+COPY config.env /app/
 
 # Set the environment variable to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
