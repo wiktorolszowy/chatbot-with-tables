@@ -104,7 +104,7 @@ class CustomPdDataFrameAgentWithContext:
         agent = self.get_cached_agent(id(self.data))
 
         # Process the message with the agent
-        # Before included in agent.invoke also self.data, which was not necessary, and actually led to errors when injecting lists of dfs.
+        # Before in agent.invoke we also included self.data, which was not necessary, and actually led to errors when injecting lists of dfs.
         # Somehow, it worked for a single df...
         result = agent.invoke(message, **self.kwargs)
 
