@@ -98,7 +98,6 @@ First, clone this repo:
 ```
 git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
 ```
-Then, you need to create file `config.env` (at the root) and put your OpenAI API key there: `OPENAI_API_KEY=...` Be careful who has access to it!
 Build the Docker image (from the root of the repo):
 ```
 docker build -t chatbot-with-tables .

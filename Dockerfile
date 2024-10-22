@@ -23,7 +23,6 @@ RUN /root/.local/bin/uv venv && \
 COPY table_bot/ /app/table_bot/
 COPY templates/ /app/templates/
 COPY app.py /app/
-COPY config.env /app/
 
 # Set the environment variable to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
