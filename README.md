@@ -72,23 +72,6 @@ Furthermore, we do not want to have cell outputs on the remote (because there co
 `.ipynb` files are ignored by git (cf. our ```.gitignore```), so we are tracking the corresponding `.py` file of the `.ipynb` file.
 To get the `.ipynb` file from the `.py` file, run ```jupytext --to ipynb test_table_bot.py```.
 
-## Using the chatbot with a Docker container
-
-If you do not want to work on the code or want to make changes and then transfer the chatbot, consider making a Docker container. First, clone this repo:
-```
-git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
-```
-Then, you need to create file `config.env` (at the root) and put your OpenAI API key there: `OPENAI_API_KEY=...` Be careful who has access to it!
-Build the Docker image (from the root of the repo):
-```
-docker build -t chatbot-with-tables .
-```
-and then run the Docker container:
-```
-docker run -p 5000:5000 chatbot-with-tables
-```
-If there are port problems, look above.
-
 ### Suggested VSCode Extensions
 
 Ideally, install the following VSCode extensions:
@@ -106,6 +89,25 @@ Ideally, install the following VSCode extensions:
 - Jupytext for Notebooks (congyiwu)
 - Snyk Security
 - SonarLint
+
+## Using the chatbot with a Docker container
+
+In case you want to work with the chatbot based on the Docker image.
+
+First, clone this repo:
+```
+git clone https://github.com/wiktorolszowy/chatbot-with-tables.git
+```
+Then, you need to create file `config.env` (at the root) and put your OpenAI API key there: `OPENAI_API_KEY=...` Be careful who has access to it!
+Build the Docker image (from the root of the repo):
+```
+docker build -t chatbot-with-tables .
+```
+and then run the Docker container:
+```
+docker run -p 5000:5000 chatbot-with-tables
+```
+If there are port problems, look above.
 
 ## Safety
 
